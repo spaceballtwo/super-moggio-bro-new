@@ -12,8 +12,36 @@ controller.player2.onButtonEvent(ControllerButton.B, ControllerButtonEvent.Press
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     mySprite.setVelocity(0, 50)
 })
+controller.combos.attachCombo("123123124654565", function () {
+    if (true) {
+        controller.combos.setTriggerType(TriggerType.Continuous)
+        timer.debounce("action", 5, function () {
+            if (controller.A.isPressed()) {
+                mySprite.setVelocity(0, -700)
+                timer.after(750, function () {
+                    if (controller.A.isPressed()) {
+                        mySprite.setVelocity(0, -50)
+                    }
+                })
+            }
+        })
+    }
+})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     mySprite.setVelocity(0, -50)
+})
+controller.combos.attachCombo("123213541e35835928475934", function () {
+    controller.combos.setTriggerType(TriggerType.Continuous)
+    timer.debounce("action", 500, function () {
+        if (controller.A.isPressed()) {
+            mySprite.setVelocity(0, -70)
+        }
+        timer.after(750, function () {
+            if (controller.A.isPressed()) {
+                mySprite.setVelocity(0, -50)
+            }
+        })
+    })
 })
 controller.player2.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Pressed, function () {
     mysprite2.setVelocity(0, -50)
@@ -66,6 +94,7 @@ scene.onOverlapTile(SpriteKind.Player, sprites.castle.tileGrass1, function (spri
 })
 let mysprite2: Sprite = null
 let mySprite: Sprite = null
+tiles.setCurrentTilemap(tilemap`level6`)
 tiles.setCurrentTilemap(tilemap`level2`)
 mySprite = sprites.create(img`
     9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 
@@ -113,16 +142,17 @@ controller.player2.moveSprite(mysprite2, 50, 0)
 splitScreen.cameraFollowSprite(splitScreen.Camera.Camera1, mySprite)
 splitScreen.cameraFollowSprite(splitScreen.Camera.Camera2, mysprite2)
 let lap = 0
+controller.combos.setExtendedComboMode(true)
+game.onUpdateInterval(10, function () {
+    info.changeScoreBy(1)
+    info.player2.changeScoreBy(1)
+})
 forever(function () {
     if (mysprite2.tileKindAt(TileDirection.Center, assets.tile`myTile`)) {
         tiles.placeOnTile(mysprite2, tiles.getTileLocation(8, 63))
         lap += 1
         if (lap == 3) {
-            if (info.player2.score() < info.score()) {
-                game.gameOver(true)
-            } else {
-                game.gameOver(false)
-            }
+            game.gameOver(true)
         }
     }
 })
@@ -133,8 +163,6 @@ forever(function () {
         if (lap == 3) {
             if (info.score() < info.player2.score()) {
                 game.gameOver(true)
-            } else {
-                game.gameOver(false)
             }
         }
     }
@@ -156,8 +184,4 @@ forever(function () {
             mySprite.setVelocity(0, 0)
         }
     }
-})
-game.onUpdateInterval(100, function () {
-    info.changeScoreBy(1)
-    info.player2.changeScoreBy(1)
 })
